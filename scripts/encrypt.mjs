@@ -5,8 +5,21 @@ const password = process.env.IMPERIO_PASSWORD;
 if (!password || password.length < 12) {
   throw new Error('IMPERIO_PASSWORD fehlt oder ist kürzer als 12 Zeichen.');
 }
-if (!process.env.VITE_SUPABASE_URL?.startsWith('https://') || !process.env.VITE_SUPABASE_ANON_KEY) {
-  throw new Error('VITE_SUPABASE_URL oder VITE_SUPABASE_ANON_KEY fehlt für den Pages-Build.');
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+let validSupabaseUrl = false;
+try {
+  const parsedUrl = new URL(supabaseUrl);
+  validSupabaseUrl = parsedUrl.protocol === 'https:'
+    && parsedUrl.pathname === '/'
+    && !parsedUrl.search
+    && !parsedUrl.hash
+    && !parsedUrl.username
+    && !parsedUrl.password;
+} catch {
+  validSupabaseUrl = false;
+}
+if (!validSupabaseUrl || !process.env.VITE_SUPABASE_ANON_KEY) {
+  throw new Error('VITE_SUPABASE_URL muss die HTTPS-Project-URL ohne Pfad, Query oder Fragment sein (z. B. https://<project-ref>.supabase.co); VITE_SUPABASE_ANON_KEY muss ebenfalls gesetzt sein.');
 }
 
 const path = new URL('../dist/index.html', import.meta.url);
