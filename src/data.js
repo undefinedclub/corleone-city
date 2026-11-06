@@ -1,0 +1,64 @@
+import {
+  LayoutDashboard, Newspaper, SlidersHorizontal, Shield, Users, ContactRound, FolderLock,
+  UserRound, CalendarOff, ClipboardCheck, CalendarDays, Ban, Trophy, ScrollText, Gavel,
+  HandCoins, Wallet, Banknote, ShoppingCart, Warehouse, CarFront, Network,
+} from 'lucide-react';
+
+const memberOptions = (data) => data.members.map((member) => ({ value: member.id, label: `${member.firstName} ${member.lastName}` }));
+const memberField = (label = 'Mitglied', required = true) => ({ key: 'memberId', label, type: 'select', required, options: memberOptions });
+const text = (key, label, required = false) => ({ key, label, type: 'text', required });
+const date = (key, label, required = true) => ({ key, label, type: 'date', required });
+const number = (key, label, required = true) => ({ key, label, type: 'number', required });
+const select = (key, label, options, required = true) => ({ key, label, type: 'select', options, required });
+const area = (key, label) => ({ key, label, type: 'textarea' });
+const datetime = (key, label) => ({ key, label, type: 'datetime-local', required: true });
+
+export const navigation = [
+  { title: 'Übersicht', icon: LayoutDashboard, items: [['dashboard', 'Übersicht']] },
+  { title: 'Familie', icon: Users, items: [['members', 'Mitgliederliste'], ['phonebook', 'Telefonbuch'], ['files', 'Mitglieder-Akten'], ['myfile', 'Meine Akte'], ['absences', 'Abmeldungen'], ['attendance', 'Anwesenheit'], ['events', 'Termine'], ['blacklist', 'Blacklist'], ['football', 'Fußball']] },
+  { title: 'Leitung', icon: ScrollText, items: [['minutes', 'Leitungsprotokoll'], ['sanctions', 'Sanktionen']] },
+  { title: 'Kasse & Lager', icon: Wallet, items: [['dues', 'Wochenabgabe'], ['treasury', 'Familienkasse'], ['loans', 'Familienkredit'], ['purchases', 'Einkäufe'], ['inventory', 'Fraktionslager']] },
+  { title: 'Weitere Bereiche', icon: Network, items: [['vehicles', 'Fahrzeuge'], ['families', 'Familieninfos']] },
+  { title: 'Verwaltung', icon: SlidersHorizontal, items: [['news', 'Neuigkeiten'], ['settings', 'Einstellungen'], ['permissions', 'Berechtigungen']] },
+];
+
+export const moduleConfig = {
+  members: { title: 'Mitgliederliste', subtitle: 'Mitglieder manuell pflegen und der Familie zuordnen.', collection: 'members', icon: Users, columns: [['name', 'Mitglied'], ['rank', 'Rang'], ['phone', 'Telefon'], ['status', 'Status'], ['joined', 'Eintritt']], fields: [text('firstName', 'Vorname', true), text('lastName', 'Nachname', true), text('playerId', 'Spielerkennung (optional)'), select('rank', 'Rang', (data) => data.settings.ranks.map((rank) => ({ value: rank, label: rank })), true), text('phone', 'Telefonnummer'), date('joined', 'Eintrittsdatum'), select('status', 'Status', ['Aktiv', 'Inaktiv', 'Abgemeldet', 'Sanktioniert']), area('notes', 'Notizen')], searchKeys: ['firstName', 'lastName', 'phone', 'playerId'], filters: ['rank', 'status'] },
+  absences: { title: 'Abmeldungen', subtitle: 'Abwesenheiten und Rückkehrtermine.', collection: 'absences', icon: CalendarOff, columns: [['memberId', 'Mitglied'], ['start', 'Beginn'], ['end', 'Ende'], ['reason', 'Grund'], ['status', 'Status']], fields: [memberField(), date('start', 'Beginn'), date('end', 'Ende'), text('reason', 'Grund', true), area('notes', 'Zusatz'), select('status', 'Status', ['Aktiv', 'Beendet'])], searchKeys: ['reason', 'notes'], filters: ['status'] },
+  attendance: { title: 'Anwesenheit', subtitle: 'Teilnahmen und Abwesenheiten dokumentieren.', collection: 'attendance', icon: ClipboardCheck, columns: [['memberId', 'Mitglied'], ['date', 'Datum'], ['occasion', 'Anlass'], ['status', 'Anwesenheit']], fields: [memberField(), date('date', 'Datum'), text('occasion', 'Anlass', true), select('status', 'Status', ['Anwesend', 'Abwesend', 'Entschuldigt'])], searchKeys: ['occasion'], filters: ['status'] },
+  events: { title: 'Termine', subtitle: 'Termine und Teilnehmer direkt in der Familienverwaltung eintragen.', collection: 'events', icon: CalendarDays, columns: [['title', 'Termin'], ['date', 'Datum'], ['time', 'Uhrzeit'], ['place', 'Ort'], ['status', 'Status']], fields: [text('title', 'Titel', true), date('date', 'Datum'), text('time', 'Uhrzeit'), text('place', 'Ort'), area('description', 'Beschreibung'), area('participants', 'Teilnehmer / Rückmeldungen (manuell)'), select('status', 'Status', ['Geplant', 'Abgeschlossen', 'Abgesagt'])], searchKeys: ['title', 'place', 'description', 'participants'], filters: ['status'] },
+  blacklist: { title: 'Blacklist', subtitle: 'Interne Einträge mit nachvollziehbarem Kontext.', collection: 'blacklist', icon: Ban, columns: [['player', 'Spieler'], ['family', 'Familie'], ['area', 'Bereich'], ['reason', 'Grund'], ['date', 'Datum']], fields: [text('player', 'Spielername', true), text('family', 'Zugehörige Familie'), select('area', 'Bereich', ['Familie', 'Route', 'Sonstiges']), text('enteredBy', 'Eingetragen von'), text('reason', 'Grund', true), area('evidence', 'Beweisbeschreibung'), date('date', 'Datum')], searchKeys: ['player', 'family', 'reason'], filters: ['area'] },
+  football: { title: 'Fußball', subtitle: 'Matches, Aufstellungen und Rückmeldungen direkt auf der Website pflegen.', collection: 'football', icon: Trophy, columns: [['opponent', 'Gegner'], ['field', 'Feld'], ['date', 'Datum'], ['time', 'Uhrzeit'], ['status', 'Status']], fields: [text('opponent', 'Gegner', true), text('field', 'Feld'), date('date', 'Datum'), text('time', 'Uhrzeit'), area('lineup', 'Spieleraufstellung'), area('participants', 'Teilnahme / Zu- und Absagen (manuell)'), select('status', 'Status', ['Geplant', 'Abgeschlossen', 'Abgesagt']), area('notes', 'Notizen')], searchKeys: ['opponent', 'field', 'participants'], filters: ['status'] },
+  minutes: { title: 'Leitungsprotokoll', subtitle: 'Beschlüsse, Verantwortlichkeiten und Verlauf.', collection: 'minutes', icon: ScrollText, columns: [['title', 'Protokoll'], ['date', 'Datum'], ['owner', 'Verantwortlich'], ['result', 'Ergebnis']], fields: [text('title', 'Titel', true), date('date', 'Datum'), text('owner', 'Verantwortliche Person'), text('attendees', 'Beteiligte'), area('description', 'Beschreibung'), area('result', 'Ergebnis'), area('notes', 'Notizen')], searchKeys: ['title', 'owner', 'description'], filters: [] },
+  sanctions: { title: 'Sanktionen', subtitle: 'Laufende Maßnahmen und vollständige Historie.', collection: 'sanctions', icon: Gavel, columns: [['memberId', 'Mitglied'], ['type', 'Art'], ['reason', 'Grund'], ['amount', 'Strafmaß'], ['date', 'Datum'], ['status', 'Status']], fields: [memberField(), text('type', 'Art der Sanktion', true), text('reason', 'Grund', true), number('amount', 'Betrag / Strafmaß', false), text('owner', 'Verantwortlich'), date('date', 'Datum'), select('status', 'Status', ['Aktiv', 'Abgeschlossen', 'Aufgehoben'])], searchKeys: ['type', 'reason'], filters: ['status'] },
+  dues: { title: 'Wochenabgabe', subtitle: 'Wöchentliche Beiträge und Befreiungen.', collection: 'dues', icon: HandCoins, columns: [['memberId', 'Mitglied'], ['week', 'Kalenderwoche'], ['amount', 'Geld'], ['items', 'Waren'], ['status', 'Status']], fields: [memberField(), text('week', 'Kalenderwoche', true), number('amount', 'Geldbetrag', false), number('items', 'Warenmenge', false), select('status', 'Status', ['Offen', 'Erledigt', 'Befreit']), area('notes', 'Notizen')], searchKeys: ['week'], filters: ['status'] },
+  treasury: { title: 'Familienkasse', subtitle: 'Einnahmen, Ausgaben und Kontostände.', collection: 'transactions', icon: Banknote, columns: [['date', 'Datum'], ['account', 'Konto'], ['type', 'Art'], ['amount', 'Betrag'], ['category', 'Kategorie'], ['owner', 'Verantwortlich']], fields: [date('date', 'Datum'), select('account', 'Konto', ['Schwarzgeld', 'Grüngeld']), select('type', 'Buchung', ['Einnahme', 'Ausgabe']), number('amount', 'Betrag'), text('category', 'Kategorie'), text('description', 'Beschreibung'), text('owner', 'Verantwortlich')], searchKeys: ['category', 'description', 'owner'], filters: ['account', 'type'] },
+  loans: { title: 'Familienkredit', subtitle: 'Ausgezahlte Kredite und Rückzahlungen.', collection: 'loans', icon: HandCoins, columns: [['memberId', 'Mitglied'], ['purpose', 'Zweck'], ['amount', 'Kredit'], ['repaid', 'Getilgt'], ['due', 'Fällig'], ['status', 'Status']], fields: [memberField(), text('purpose', 'Zweck', true), number('amount', 'Kreditbetrag'), number('fee', 'Gebühr'), number('repaid', 'Bereits zurückgezahlt', false), date('due', 'Fälligkeitsdatum'), select('status', 'Status', ['Offen', 'Überfällig', 'Abgeschlossen'])], searchKeys: ['purpose'], filters: ['status'] },
+  purchases: { title: 'Einkäufe', subtitle: 'Bestellungen, Lieferungen und offene Rechnungen.', collection: 'purchases', icon: ShoppingCart, columns: [['supplier', 'Lieferant'], ['item', 'Artikel'], ['price', 'Preis'], ['delivery', 'Lieferung'], ['status', 'Status']], fields: [text('supplier', 'Lieferant', true), text('item', 'Artikel', true), area('description', 'Beschreibung'), number('price', 'Preis'), date('delivery', 'Lieferdatum'), select('status', 'Status', ['Offen', 'Bestellt', 'Erhalten', 'Bezahlt']), text('owner', 'Verantwortlich')], searchKeys: ['supplier', 'item', 'description'], filters: ['status'] },
+  inventory: { title: 'Fraktionslager', subtitle: 'Bestände, Mindestmengen und Bewegungen.', collection: 'inventory', icon: Warehouse, columns: [['item', 'Item'], ['quantity', 'Menge'], ['minimum', 'Mindestbestand'], ['description', 'Beschreibung']], fields: [text('item', 'Item', true), number('quantity', 'Menge'), number('minimum', 'Mindestbestand'), area('description', 'Beschreibung')], searchKeys: ['item', 'description'], filters: [] },
+  vehicles: { title: 'Fahrzeuge', subtitle: 'Fuhrpark und individuelle Fahrzeugdaten.', collection: 'vehicles', icon: CarFront, columns: [['model', 'Modell'], ['plate', 'Kennzeichen'], ['driver', 'Fahrer'], ['color', 'Farbe'], ['notes', 'Notizen']], fields: [text('model', 'Modell', true), text('plate', 'Kennzeichen', true), text('color', 'Hauptfarbe'), text('secondaryColor', 'Zweitfarbe'), text('driver', 'Fahrer'), text('rims', 'Felgen / Farbe'), text('tint', 'Scheibentönung'), text('neon', 'Neon / Xenon'), text('tuning', 'Tuning'), area('notes', 'Notizen')], searchKeys: ['model', 'plate', 'driver'], filters: [] },
+  families: { title: 'Familieninfos', subtitle: 'Kontakte und Beziehungen zu anderen Familien.', collection: 'families', icon: Network, columns: [['name', 'Familie'], ['relation', 'Beziehung'], ['location', 'Wohnort'], ['contact', 'Ansprechpartner'], ['phone', 'Telefon']], fields: [text('name', 'Familienname', true), select('relation', 'Beziehung', ['Verbündet', 'Neutral', 'Feindlich']), text('location', 'Wohnort / Route'), text('contact', 'Ansprechpartner'), text('phone', 'Telefonnummer'), area('notes', 'Notizen')], searchKeys: ['name', 'location', 'contact'], filters: ['relation'] },
+  news: { title: 'Neuigkeiten', subtitle: 'Mitteilungen und Ankündigungen der Leitung.', collection: 'news', icon: Newspaper, columns: [['title', 'Überschrift'], ['category', 'Kategorie'], ['importance', 'Wichtigkeit'], ['author', 'Autor'], ['date', 'Datum']], fields: [text('title', 'Überschrift', true), area('content', 'Inhalt'), text('author', 'Autor'), date('date', 'Datum'), select('category', 'Kategorie', ['Allgemein', 'Wichtig', 'Event', 'Leitung', 'Intern']), select('importance', 'Wichtigkeit', ['Normal', 'Hoch'])], searchKeys: ['title', 'content', 'author'], filters: ['category', 'importance'] },
+};
+
+export const staticPages = {
+  phonebook: { title: 'Telefonbuch', subtitle: 'Direkt mit den Mitgliederdaten verknüpft.', icon: ContactRound },
+  files: { title: 'Mitglieder-Akten', subtitle: 'Mitglieder und verknüpfte Vorgänge im Blick.', icon: FolderLock },
+  myfile: { title: 'Meine Akte', subtitle: 'Persönliche Übersicht für ein ausgewähltes Mitglied.', icon: UserRound },
+  settings: { title: 'Einstellungen', subtitle: 'Familienprofil, Abgabe und Datensicherung.', icon: SlidersHorizontal },
+  permissions: { title: 'Berechtigungen', subtitle: 'Rollenmatrix für die Benutzeroberfläche.', icon: Shield },
+};
+
+export function fieldOptions(field, data) {
+  if (typeof field.options === 'function') return field.options(data);
+  return (field.options || []).map((option) => typeof option === 'string' ? ({ value: option, label: option }) : option);
+}
+
+export function displayValue(record, key, data) {
+  if (key === 'name') return [record.firstName, record.lastName].filter(Boolean).join(' ');
+  if (key === 'memberId') return data.members.find((member) => member.id === record.memberId)?.firstName
+    ? `${data.members.find((member) => member.id === record.memberId).firstName} ${data.members.find((member) => member.id === record.memberId).lastName}`
+    : 'Unbekanntes Mitglied';
+  if (record[key] === undefined || record[key] === '') return '—';
+  return record[key];
+}
