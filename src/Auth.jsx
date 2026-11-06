@@ -54,9 +54,18 @@ function SignIn() {
     setBusy(true);
     try {
       const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
-      if (authError) setError('Anmeldung fehlgeschlagen. Prüfe Discord-ID und Passwort.');
-    } catch {
-      setError('Der Anmeldedienst ist gerade nicht erreichbar.');
+      if (authError) {
+        const message = authError.message.toLowerCase();
+        if (message.includes('email not confirmed')) {
+          setError('Das Supabase-Konto ist noch nicht bestätigt. Bitte lasse es im Supabase-Dashboard unter Authentication > Users bestätigen; an die .invalid-Adresse kann keine E-Mail zugestellt werden.');
+        } else if (message.includes('invalid login credentials')) {
+          setError(`Discord-ID oder Passwort stimmen nicht mit einem Supabase-Konto überein. Prüfe, ob dessen E-Mail exakt ${email} lautet und ob das Passwort korrekt ist.`);
+        } else {
+          setError(`Supabase-Anmeldung fehlgeschlagen: ${authError.message}`);
+        }
+      }
+    } catch (requestError) {
+      setError(`Der Anmeldedienst ist nicht erreichbar: ${requestError.message}`);
     } finally {
       setBusy(false);
     }
