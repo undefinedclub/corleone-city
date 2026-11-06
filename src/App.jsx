@@ -3,7 +3,7 @@ import {
   ArrowDownToLine, ArrowUpFromLine, Bell, Check, ChevronDown, ChevronLeft, ChevronRight,
   CircleHelp, Clock3, Command, FilePlus2, FileText, LockKeyhole, LogOut, Menu, Plus,
   Search, Settings2, ShieldAlert, Trash2, TrendingDown, TrendingUp, UsersRound, Wallet,
-  X, Pencil, Eye, CalendarClock, Package, CarFront,
+  X, Pencil, Eye, CalendarClock, CalendarDays, Package, Warehouse, CarFront,
 } from 'lucide-react';
 import { displayValue, fieldOptions, moduleConfig, navigation, staticPages } from './data.js';
 import { AuthGate, ConfigurationMessage } from './Auth.jsx';
